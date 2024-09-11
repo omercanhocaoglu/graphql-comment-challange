@@ -1,0 +1,26 @@
+.container {
+    height: 100vh;
+}
+
+.content {
+    background-color: #fff;
+    padding: 24px;
+    margin: 24px;
+    border: solid 4px bisque;
+
+}
+
+.menu {
+    border: solid 4px bisque; 
+    background-color: none;
+}
+
+.menuLink {
+    text-decoration: none;
+    color: black;
+    padding: 10px;
+}
+
+.menuLink:hover {
+    color: bisque;
+}

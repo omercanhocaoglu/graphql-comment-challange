@@ -1,0 +1,22 @@
+.pagesLink {
+    color: rgba(0, 0, 0, 0.45);
+    font-size: 14px;
+    line-height: 1.5714285714285714;
+}
+
+.pagesLink:hover {
+    color: rgba(0, 0, 0, 0.8); 
+}
+
+.pagesTitle {
+    color: rgba(0, 0, 0, 0.8); 
+}
+.pagesTitle:hover {
+    color: rgba(0, 0, 0, 0.6); 
+}
+.textCenter {
+    text-align: center;
+}
+.newPostPhoto {
+    padding: 20px;
+}

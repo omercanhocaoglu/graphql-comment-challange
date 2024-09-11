@@ -1,0 +1,140 @@
+
+  type User {
+        id: ID
+        fullName: String
+        age: Int
+        posts: [Post]
+        comments: [Comment]
+        
+      }
+
+      input CreateUserInput {
+
+        fullName: String
+        age: Int
+      }
+  
+      input updateUserInput {
+        
+        fullName: String
+        age: Int
+      }
+   
+    
+    
+    
+    type Post {
+        id: ID
+        title: String
+        user_id: ID
+        user: User
+        comments: [Comment]
+    }
+
+    input CreatePostInput {
+
+      title: String, 
+      user_id: ID
+    }
+
+    input updatePostInput {
+
+      title: String
+      user_id: ID
+
+
+    }
+
+
+
+
+
+    type Comment {
+        id: ID
+        text: String
+        post_id: ID
+        user: User
+        posts: Post
+    }
+
+    input CreateCommentInput {
+
+      text: String, 
+      post_id: ID, 
+      user_id: ID
+    }
+
+    input uptadeCommentInput {
+      text: String
+      post_id: ID
+      user_id: ID
+    }
+
+    
+    
+    type deleteAllOutputs {
+      count: Int
+    }
+    
+    
+    
+    
+    
+    type Query {
+
+       #Burası user kısmı---
+        users: [User]
+        user(id: ID): User
+        
+        
+        #Burası post kısmı---
+        posts: [Post]
+        post(id: ID): Post
+        
+        #Burası comments kısmı---
+        comments: [Comment]
+        comment(id: ID): Comment
+    }
+    
+    
+    #bu kısım da mutationlar var yani sonradan veri ekleyebilmemiz için lazım olanlar
+    
+    type Mutation {
+      # User
+      createUser( data: CreateUserInput ): User
+      updateUser(id: ID, data: updateUserInput): User
+      deleteUser(id: ID, fullName: String): User
+      deleteAllUsers: deleteAllOutputs 
+
+
+      # Post
+      createPost( data: CreatePostInput ): Post
+      updatePost( id: ID, data: updatePostInput ): Post
+      deletePost(id: ID, title: String): Post
+      deleteAllPosts: deleteAllOutputs
+      
+     
+     
+      # Comment
+      createComment( data:  CreateCommentInput ): Comment
+      updateComment( id: ID, data: uptadeCommentInput  ): Comment
+      deleteComment(id: ID, text: String): Comment
+      deleteAllComments: deleteAllOutputs
+    }
+
+    type Subscription {
+
+      userCreated : User
+      userDeleted: User
+      userUpdated: User
+      
+      postCreated(user_id: ID): Post
+      postUpdated: Post
+      postDeleted: Post
+      postCount: Int
+
+
+      commentCreated(post_id: ID): Comment
+      commentUpdated: Comment
+      commentDeleted: Comment
+    }
