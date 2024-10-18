@@ -1,31 +1,68 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { gql, useLazyQuery } from "@apollo/client";
 import { Alert, Spin, Flex, Divider, Button, Avatar, List } from 'antd';
 import {useParams} from "react-router-dom";
 import "./style.css";
+import NewCommentForm from './NewCommentForm';
 
 function CommentPage () {
     const {id} = useParams();
     // console.log(id);
+    const commentsFragment = gql`
+        fragment CommentsFragment on Comment {
+            id
+            text
+            user
+                {
+                    fullName
+                    profile_photo
+                } 
+        }
+    `;
 
     const GET_POST_COMMENTS = gql`
         query getComments($id: ID!) {
             post(id: $id) {
                 comments {
-                            id
-                            text
-                            user
-                                {
-                                    fullName
-                                    profile_photo
-                                }
+                    ...CommentsFragment
                 }
             }
-        }`;
+        }
+        ${commentsFragment}`;
+        const COMMENTS_SUBSCRIPTIONS = gql`
+        subscription commentCreated($post_id: ID) {
+            commentCreated(post_id: $post_id){
+                ...CommentsFragment
+            }
+        }
+        ${commentsFragment}`;
 
-    const [getComments, {  loading, error, data }] = useLazyQuery(GET_POST_COMMENTS, {
+    const [getComments, {  called, loading, error, data, subscribeToMore }] = useLazyQuery(GET_POST_COMMENTS, {
     variables: { id },
     });
+    useEffect(() => {
+        if(!loading && called) {
+            subscribeToMore({
+                document: COMMENTS_SUBSCRIPTIONS,
+                updateQuery: (prev, {subscriptionData}) => {
+                    // console.log("prev", prev);
+                    // console.log("subsciptionData", subscriptionData);
+                    if (!subscriptionData.data) return prev;
+                    const newCommentItem = subscriptionData.data.commentCreated;
+                    return {
+                        post: {
+                            ...prev.post,
+                            comments: [
+                                ...prev.post.comments,
+                                newCommentItem
+                            ]
+                        }
+                    }
+                }
+            })
+        }
+    }, [called, loading, subscribeToMore])
+    
 
     const contentStyle = {
     padding: 50,
@@ -70,6 +107,8 @@ function CommentPage () {
                     </List.Item>
                     )}
                 />
+                <Divider> New Comment </Divider>
+                <NewCommentForm/>
             </div>
         }
     </div>

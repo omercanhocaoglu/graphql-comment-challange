@@ -1,25 +1,55 @@
-import React from 'react';
+import { useEffect } from 'react';
 import { Avatar, List, Alert, Spin, Flex } from 'antd';
 import { gql, useQuery } from '@apollo/client';
 import { Link } from 'react-router-dom';
 import "./style.css";
 
 function HomePage() {
+  const postsFragment = gql`
+  fragment PostsFragment on Post {
+    id
+    title
+    description
+    short_description
+    user {
+      profile_photo
+    }
+  }
+`;
   // query
   const GET_POSTS = gql`
     query getAllPosts {
       posts {
-        id
-        title
-        description
-        short_description
-        user {
-          profile_photo
-        }
+        ...PostsFragment
       }
     }
-  `;
-  const { loading, error, data } = useQuery(GET_POSTS);
+  ${postsFragment}`;
+  const POSTS_SUBSCRIPTION = gql`
+    subscription {
+      postCreated  {
+        ...PostsFragment
+    }
+  }
+  ${postsFragment}`;
+  //
+  const { loading, error, data, subscribeToMore } = useQuery(GET_POSTS);
+  useEffect(() => {
+    subscribeToMore({
+      document: POSTS_SUBSCRIPTION,
+      updateQuery: ( prev, {subscriptionData} ) => {
+        if (!subscriptionData.data) return prev;
+        return {
+          posts: [
+            subscriptionData.data.postCreated,
+            ...prev.posts
+          ],
+        }
+        // console.log("prev", prev);
+        // console.log("subs", subscriptionData);
+      }
+    });
+  }, [subscribeToMore])
+  
   //
   const contentStyle = {
     padding: 50,
@@ -31,7 +61,7 @@ function HomePage() {
     return (
       <div>
   <Flex gap="middle" vertical>
-      <Spin tip="Loading" size="large">{content}</Spin>
+      <Spin delay={300} tip="Loading" size="large">{content}</Spin>
     </Flex>
     </div>
     )

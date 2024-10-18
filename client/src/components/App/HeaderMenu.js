@@ -11,6 +11,9 @@ return (
             <Link to="/" className="menuLink">
                 Home
             </Link>
+            <Link to="/newpost" className="menuLink">
+                New Post
+            </Link>
         </Menu>
     </div>
   )

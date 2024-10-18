@@ -72,9 +72,9 @@ const Mutation = { // burası mutation kısmı içindir
     
     
     // Posts
-    createPost: (parent, { data }, {pubsub}) => { 
-      const post = { ...data, id: uid }; // bu taktikle data'dan gelen bütün bilgileri kopyalamış olduk
-      posts.push(post);
+    createPost: (_, { data }, {pubsub}) => { 
+      const post = { id: uid , ...data}; // bu taktikle data'dan gelen bütün bilgileri kopyalamış olduk
+      posts.unshift(post);
       
       pubsub.publish("postCreated", { postCreated: post });
       pubsub.publish("postCount", { postCount: posts.length } )
